@@ -15,7 +15,7 @@
             -webkit-user-select: none;
         }
         body {
-            background-color: #000000;
+            background-color: #05070a;
             color: #ffffff;
             height: 100vh;
             display: flex;
@@ -23,13 +23,34 @@
             justify-content: space-between;
             padding: 30px 40px;
             overflow: hidden;
+            position: relative;
+            transition: background 2s ease;
         }
+        /* Háttér animációs vászon */
+        #weather-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
         /* Felső rész: Óra és Aktuális időjárás */
         .top-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             padding-bottom: 25px;
         }
         .clock-box {
@@ -41,9 +62,13 @@
             line-height: 1;
             letter-spacing: -2px;
         }
+        .blink-colon {
+            -webkit-animation: pulseColon 2s infinite ease-in-out;
+            animation: pulseColon 2s infinite ease-in-out;
+        }
         #date {
             font-size: 26px;
-            color: #aaaaaa;
+            color: #bbbbbb;
             margin-top: 10px;
             text-transform: capitalize;
         }
@@ -75,11 +100,61 @@
         }
         .sub-details {
             font-size: 18px;
-            color: #999999;
+            color: #aaaaaa;
             line-height: 1.4;
         }
         .main-icon {
             font-size: 90px;
+            display: inline-block;
+        }
+
+        /* Ikon animációk */
+        .anim-spin {
+            -webkit-animation: spinSlow 24s linear infinite;
+            animation: spinSlow 24s linear infinite;
+        }
+        .anim-float {
+            -webkit-animation: floatCloud 4s ease-in-out infinite;
+            animation: floatCloud 4s ease-in-out infinite;
+        }
+        .anim-pulse {
+            -webkit-animation: pulseStorm 2.5s ease-in-out infinite;
+            animation: pulseStorm 2.5s ease-in-out infinite;
+        }
+
+        @-webkit-keyframes pulseColon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+        @keyframes pulseColon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+        @-webkit-keyframes spinSlow {
+            0% { -webkit-transform: rotate(0deg) scale(1); }
+            50% { -webkit-transform: rotate(180deg) scale(1.06); }
+            100% { -webkit-transform: rotate(360deg) scale(1); }
+        }
+        @keyframes spinSlow {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.06); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        @-webkit-keyframes floatCloud {
+            0%, 100% { -webkit-transform: translateY(0px); }
+            50% { -webkit-transform: translateY(-8px); }
+        }
+        @keyframes floatCloud {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        @-webkit-keyframes pulseStorm {
+            0%, 100% { -webkit-transform: scale(1); filter: brightness(1); }
+            50% { -webkit-transform: scale(1.08); filter: brightness(1.3); }
+        }
+        @keyframes pulseStorm {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.08); filter: brightness(1.3); }
         }
 
         /* Középső rész: Óránkénti előrejelzés */
@@ -87,23 +162,27 @@
             display: flex;
             justify-content: space-between;
             padding: 20px 0;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
         .hour-card {
             text-align: center;
-            background: #111111;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 15px 10px;
             border-radius: 14px;
             width: 15%;
+            -webkit-animation: fadeInUp 0.6s ease forwards;
+            animation: fadeInUp 0.6s ease forwards;
         }
         .hour-time {
             font-size: 20px;
-            color: #aaaaaa;
+            color: #bbbbbb;
             margin-bottom: 10px;
         }
         .hour-icon {
             font-size: 36px;
             margin: 10px 0;
+            display: inline-block;
         }
         .hour-temp {
             font-size: 26px;
@@ -120,10 +199,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #111111;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 18px 25px;
             border-radius: 14px;
             width: 23.5%;
+            -webkit-animation: fadeInUp 0.8s ease forwards;
+            animation: fadeInUp 0.8s ease forwards;
         }
         .day-name {
             font-size: 22px;
@@ -142,7 +224,7 @@
             color: #ffffff;
         }
         .temp-min {
-            color: #777777;
+            color: #888888;
             margin-left: 8px;
         }
         #status-bar {
@@ -150,34 +232,48 @@
             bottom: 6px;
             right: 40px;
             font-size: 12px;
-            color: #444444;
+            color: #555555;
+            z-index: 2;
+        }
+
+        @-webkit-keyframes fadeInUp {
+            from { opacity: 0; -webkit-transform: translateY(10px); }
+            to { opacity: 1; -webkit-transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="top-section">
-        <div class="clock-box">
-            <div id="clock">00:00</div>
-            <div id="date">Betöltés...</div>
-            <div class="location-tag">📍 Veszprém, Csalogány utca</div>
-        </div>
-        <div class="current-weather">
-            <div class="weather-details">
-                <div id="weather-desc">--</div>
-                <div class="sub-details">
-                    Hőérzet: <span id="apparent-temp">--</span>°C<br>
-                    Szél: <span id="wind-speed">--</span> km/h
-                </div>
+    <canvas id="weather-canvas"></canvas>
+
+    <div class="content-layer">
+        <div class="top-section">
+            <div class="clock-box">
+                <div id="clock">00<span class="blink-colon">:</span>00</div>
+                <div id="date">Betöltés...</div>
+                <div class="location-tag">📍 Veszprém, Csalogány utca</div>
             </div>
-            <div class="main-icon" id="main-icon">⏳</div>
-            <div class="temp-main"><span id="current-temp">--</span>°</div>
+            <div class="current-weather">
+                <div class="weather-details">
+                    <div id="weather-desc">--</div>
+                    <div class="sub-details">
+                        Hőérzet: <span id="apparent-temp">--</span>°C<br>
+                        Szél: <span id="wind-speed">--</span> km/h
+                    </div>
+                </div>
+                <div class="main-icon" id="main-icon">⏳</div>
+                <div class="temp-main"><span id="current-temp">--</span>°</div>
+            </div>
         </div>
+
+        <div class="hourly-section" id="hourly-container"></div>
+
+        <div class="daily-section" id="daily-container"></div>
     </div>
-
-    <div class="hourly-section" id="hourly-container"></div>
-
-    <div class="daily-section" id="daily-container"></div>
 
     <div id="status-bar">Utolsó frissítés: --:--</div>
 
@@ -185,41 +281,42 @@
         // Veszprém, Csalogány utca koordinátái
         var LAT = 47.0985;
         var LON = 17.9150;
+        var currentEffect = "stars";
 
         var weatherIcons = {
-            0: { icon: "☀️", text: "Derült" },
-            1: { icon: "🌤️", text: "Többnyire derült" },
-            2: { icon: "⛅", text: "Részben felhős" },
-            3: { icon: "☁️", text: "Borult" },
-            45: { icon: "🌫️", text: "Ködös" },
-            48: { icon: "🌫️", text: "Zúzmarás köd" },
-            51: { icon: "🌦️", text: "Gyenge szitálás" },
-            53: { icon: "🌦️", text: "Szitálás" },
-            55: { icon: "🌧️", text: "Erős szitálás" },
-            61: { icon: "🌦️", text: "Gyenge eső" },
-            63: { icon: "🌧️", text: "Eső" },
-            65: { icon: "🌧️", text: "Heves eső" },
-            66: { icon: "🌨️", text: "Ónos eső" },
-            67: { icon: "🌨️", text: "Erős ónos eső" },
-            71: { icon: "🌨️", text: "Gyenge havazás" },
-            73: { icon: "❄️", text: "Havazás" },
-            75: { icon: "❄️", text: "Erős havazás" },
-            77: { icon: "❄️", text: "Hószállingózás" },
-            80: { icon: "🌦️", text: "Zápor" },
-            81: { icon: "🌧️", text: "Erős zápor" },
-            82: { icon: "⛈️", text: "Felhőszakadás" },
-            85: { icon: "🌨️", text: "Hózápor" },
-            86: { icon: "❄️", text: "Erős hózápor" },
-            95: { icon: "⛈️", text: "Zivatar" },
-            96: { icon: "⛈️", text: "Zivatar jégesővel" },
-            99: { icon: "⛈️", text: "Heves zivatar" }
+            0: { icon: "☀️", text: "Derült", anim: "anim-spin", effect: "clear" },
+            1: { icon: "🌤️", text: "Többnyire derült", anim: "anim-float", effect: "clear" },
+            2: { icon: "⛅", text: "Részben felhős", anim: "anim-float", effect: "clouds" },
+            3: { icon: "☁️", text: "Borult", anim: "anim-float", effect: "clouds" },
+            45: { icon: "🌫️", text: "Ködös", anim: "anim-float", effect: "clouds" },
+            48: { icon: "🌫️", text: "Zúzmarás köd", anim: "anim-float", effect: "clouds" },
+            51: { icon: "🌦️", text: "Gyenge szitálás", anim: "anim-float", effect: "rain" },
+            53: { icon: "🌦️", text: "Szitálás", anim: "anim-float", effect: "rain" },
+            55: { icon: "🌧️", text: "Erős szitálás", anim: "anim-pulse", effect: "rain" },
+            61: { icon: "🌦️", text: "Gyenge eső", anim: "anim-float", effect: "rain" },
+            63: { icon: "🌧️", text: "Eső", anim: "anim-pulse", effect: "rain" },
+            65: { icon: "🌧️", text: "Heves eső", anim: "anim-pulse", effect: "rain" },
+            66: { icon: "🌨️", text: "Ónos eső", anim: "anim-pulse", effect: "rain" },
+            67: { icon: "🌨️", text: "Erős ónos eső", anim: "anim-pulse", effect: "rain" },
+            71: { icon: "🌨️", text: "Gyenge havazás", anim: "anim-float", effect: "snow" },
+            73: { icon: "❄️", text: "Havazás", anim: "anim-spin", effect: "snow" },
+            75: { icon: "❄️", text: "Erős havazás", anim: "anim-spin", effect: "snow" },
+            77: { icon: "❄️", text: "Hószállingózás", anim: "anim-float", effect: "snow" },
+            80: { icon: "🌦️", text: "Zápor", anim: "anim-pulse", effect: "rain" },
+            81: { icon: "🌧️", text: "Erős zápor", anim: "anim-pulse", effect: "rain" },
+            82: { icon: "⛈️", text: "Felhőszakadás", anim: "anim-pulse", effect: "rain" },
+            85: { icon: "🌨️", text: "Hózápor", anim: "anim-float", effect: "snow" },
+            86: { icon: "❄️", text: "Erős hózápor", anim: "anim-spin", effect: "snow" },
+            95: { icon: "⛈️", text: "Zivatar", anim: "anim-pulse", effect: "rain" },
+            96: { icon: "⛈️", text: "Zivatar jégesővel", anim: "anim-pulse", effect: "rain" },
+            99: { icon: "⛈️", text: "Heves zivatar", anim: "anim-pulse", effect: "rain" }
         };
 
         var daysHu = ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"];
         var monthsHu = ["január", "február", "március", "április", "május", "június", "július", "augusztus", "szeptember", "október", "november", "december"];
 
         function getWeatherInfo(code) {
-            return weatherIcons[code] || { icon: "🌡️", text: "Változó" };
+            return weatherIcons[code] || { icon: "🌡️", text: "Változó", anim: "anim-float", effect: "clouds" };
         }
 
         function updateClock() {
@@ -229,7 +326,7 @@
             if (hours.length < 2) hours = "0" + hours;
             if (minutes.length < 2) minutes = "0" + minutes;
 
-            document.getElementById("clock").innerText = hours + ":" + minutes;
+            document.getElementById("clock").innerHTML = hours + '<span class="blink-colon">:</span>' + minutes;
 
             var dayName = daysHu[now.getDay()];
             var monthName = monthsHu[now.getMonth()];
@@ -239,7 +336,7 @@
 
         function fetchWeather() {
             var url = "https://api.open-meteo.com/v1/forecast?latitude=" + LAT + "&longitude=" + LON +
-                      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m" +
+                      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day" +
                       "&hourly=temperature_2m,weather_code" +
                       "&daily=weather_code,temperature_2m_max,temperature_2m_min" +
                       "&timezone=Europe%2FBudapest&forecast_days=5";
@@ -256,23 +353,33 @@
         }
 
         function renderWeather(data) {
-            // Aktuális időjárás
             var curr = data.current;
             var info = getWeatherInfo(curr.weather_code);
             document.getElementById("current-temp").innerText = Math.round(curr.temperature_2m);
             document.getElementById("apparent-temp").innerText = Math.round(curr.apparent_temperature);
             document.getElementById("wind-speed").innerText = Math.round(curr.wind_speed_10m);
             document.getElementById("weather-desc").innerText = info.text;
-            document.getElementById("main-icon").innerText = info.icon;
 
-            // Óránkénti előrejelzés (következő 6x2 óra)
-            var nowHour = new Date().getHours();
+            var mainIconEl = document.getElementById("main-icon");
+            mainIconEl.innerText = (curr.is_day === 0 && curr.weather_code === 0) ? "🌙" : info.icon;
+            mainIconEl.className = "main-icon " + info.anim;
+
+            // Háttér hangulat és részecske effekt beállítása
+            if (curr.is_day === 0) {
+                document.body.style.background = "linear-gradient(135deg, #02040a 0%, #0a101d 100%)";
+                currentEffect = (info.effect === "clear") ? "stars" : info.effect;
+            } else {
+                document.body.style.background = "linear-gradient(135deg, #07111e 0%, #102033 100%)";
+                currentEffect = info.effect;
+            }
+            initParticles();
+
+            // Óránkénti előrejelzés
             var hourlyHtml = "";
             var count = 0;
             for (var i = 0; i < data.hourly.time.length; i++) {
                 var itemDate = new Date(data.hourly.time[i]);
                 if (itemDate.getTime() > new Date().getTime() && count < 6) {
-                    // Csak minden második órát mutatjuk, hogy átfogóbb legyen (pl. +2, +4, +6 óra)
                     if (i % 2 === 0) {
                         var h = String(itemDate.getHours());
                         if (h.length < 2) h = "0" + h;
@@ -290,7 +397,7 @@
             }
             document.getElementById("hourly-container").innerHTML = hourlyHtml;
 
-            // Napi előrejelzés (holnaptól 4 nap)
+            // Napi előrejelzés
             var dailyHtml = "";
             for (var d = 1; d <= 4; d++) {
                 var dDate = new Date(data.daily.time[d]);
@@ -307,7 +414,6 @@
             }
             document.getElementById("daily-container").innerHTML = dailyHtml;
 
-            // Frissítés ideje
             var now = new Date();
             var uH = String(now.getHours());
             var uM = String(now.getMinutes());
@@ -316,11 +422,81 @@
             document.getElementById("status-bar").innerText = "Frissítve: " + uH + ":" + uM;
         }
 
+        // --- HÁTTÉR RÉSZECSKE ANIMÁCIÓ (CANVAS) ---
+        var canvas = document.getElementById("weather-canvas");
+        var ctx = canvas.getContext("2d");
+        var particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        function initParticles() {
+            particles = [];
+            var count = (currentEffect === "rain") ? 70 : (currentEffect === "snow") ? 50 : 35;
+            for (var i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: (currentEffect === "clouds") ? (Math.random() * 40 + 20) : (Math.random() * 2.5 + 1),
+                    speedX: (currentEffect === "clouds") ? (Math.random() * 0.4 + 0.1) : (Math.random() * 0.6 - 0.3),
+                    speedY: (currentEffect === "rain") ? (Math.random() * 6 + 6) : (currentEffect === "snow") ? (Math.random() * 1.5 + 0.5) : 0,
+                    alpha: Math.random() * 0.5 + 0.1,
+                    twinkle: Math.random() * 0.02
+                });
+            }
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i = 0; i < particles.length; i++) {
+                var p = particles[i];
+                ctx.beginPath();
+
+                if (currentEffect === "rain") {
+                    ctx.strokeStyle = "rgba(130, 180, 255, " + p.alpha + ")";
+                    ctx.lineWidth = 1.5;
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x + p.speedX, p.y + 12);
+                    ctx.stroke();
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    if (p.y > canvas.height) { p.y = -15; p.x = Math.random() * canvas.width; }
+                } else if (currentEffect === "snow") {
+                    ctx.fillStyle = "rgba(255, 255, 255, " + p.alpha + ")";
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    p.x += Math.sin(p.y * 0.02) * 0.5;
+                    p.y += p.speedY;
+                    if (p.y > canvas.height) { p.y = -5; p.x = Math.random() * canvas.width; }
+                } else if (currentEffect === "clouds") {
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    p.x += p.speedX;
+                    if (p.x - p.r > canvas.width) { p.x = -p.r; }
+                } else {
+                    // Csillagok / lebegő fényrészecskék
+                    p.alpha += p.twinkle;
+                    if (p.alpha > 0.7 || p.alpha < 0.1) p.twinkle = -p.twinkle;
+                    ctx.fillStyle = "rgba(255, 255, 255, " + p.alpha + ")";
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+
         // Indítás
+        initParticles();
+        animateCanvas();
         updateClock();
         fetchWeather();
         setInterval(updateClock, 1000);
-        setInterval(fetchWeather, 15 * 60 * 1000); // 15 percenként frissít
+        setInterval(fetchWeather, 15 * 60 * 1000);
     </script>
 </body>
 </html>
