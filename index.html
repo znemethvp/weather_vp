@@ -15,7 +15,7 @@
             -webkit-user-select: none;
         }
         body {
-            background: linear-gradient(160deg, #1b4f8c 0%, #3a7bd5 100%);
+            background: linear-gradient(155deg, #0d2137 0%, #183a5e 50%, #244f7a 100%);
             color: #ffffff;
             height: 100vh;
             display: flex;
@@ -24,56 +24,54 @@
             padding: 28px 38px;
             overflow: hidden;
             position: relative;
-            transition: background 2s ease, color 1.5s ease;
         }
 
-        /* Témák napszak és időjárás szerint */
+        /* Témák napszak és időjárás szerint (statikus, GPU-mentes!) */
         body.theme-day-clear {
-            background: linear-gradient(160deg, #164b8a 0%, #3678c9 100%);
+            background: linear-gradient(155deg, #103c70 0%, #235c9c 55%, #3779c2 100%);
         }
         body.theme-day-cloudy {
-            background: linear-gradient(160deg, #3c4b5e 0%, #61738a 100%);
+            background: linear-gradient(155deg, #2b3847 0%, #435469 100%);
         }
         body.theme-day-rain {
-            background: linear-gradient(160deg, #212c3b 0%, #3b4c63 100%);
+            background: linear-gradient(155deg, #161f2b 0%, #29384a 100%);
         }
         body.theme-evening {
-            background: linear-gradient(160deg, #091326 0%, #16294a 100%);
+            background: linear-gradient(155deg, #070e1c 0%, #101f3b 100%);
         }
-        /* 22:00 - 06:00 közötti mély sötét (szemkímélő) mód */
+
+        /* 22:00 - 06:00 közötti mély sötét, energiatakarékos Nightstand mód */
         body.theme-night-dark {
-            background: #030406;
-            color: #cccccc;
+            background: #000000;
+            color: #8e96a0;
         }
         body.theme-night-dark .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.05);
+            background: #090b0e;
+            border-color: #14181f;
+            box-shadow: none;
         }
         body.theme-night-dark #clock,
         body.theme-night-dark .temp-main {
-            color: #dcdcdc;
+            color: #b0b8c2;
+            text-shadow: none;
         }
         body.theme-night-dark .location-tag {
-            color: #5b8ec9;
+            color: #4a729e;
         }
-        body.theme-night-dark #weather-canvas {
-            opacity: 0.35;
+        body.theme-night-dark .main-icon-wrap svg,
+        body.theme-night-dark .hour-icon-wrap svg,
+        body.theme-night-dark .day-icon-wrap svg {
+            opacity: 0.7;
         }
-
-        #weather-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            transition: opacity 1.5s ease;
+        /* Éjszaka minden animáció leáll a nulla CPU-terhelésért */
+        body.theme-night-dark .anim-float,
+        body.theme-night-dark .anim-moon,
+        body.theme-night-dark .blink-colon {
+            -webkit-animation: none !important;
+            animation: none !important;
         }
 
         .content-layer {
-            position: relative;
-            z-index: 1;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -86,21 +84,21 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 18px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
         .clock-box {
             text-align: left;
         }
         #clock {
-            font-size: 118px;
+            font-size: 120px;
             font-weight: 200;
             line-height: 0.95;
             letter-spacing: -3px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
         .blink-colon {
-            -webkit-animation: pulseColon 2s infinite ease-in-out;
-            animation: pulseColon 2s infinite ease-in-out;
+            -webkit-animation: pulseColon 4s infinite ease-in-out;
+            animation: pulseColon 4s infinite ease-in-out;
         }
         #date {
             font-size: 25px;
@@ -120,17 +118,14 @@
             font-weight: 500;
             letter-spacing: 0.3px;
         }
-        .night-badge {
-            display: none;
+        .eco-badge {
             margin-left: 12px;
-            font-size: 12px;
+            font-size: 11px;
             padding: 2px 8px;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.08);
-            color: #888888;
-        }
-        body.theme-night-dark .night-badge {
-            display: inline-block;
+            color: rgba(255, 255, 255, 0.55);
+            letter-spacing: 0.4px;
         }
 
         .current-weather {
@@ -145,35 +140,34 @@
             font-size: 28px;
             font-weight: 500;
             margin-bottom: 6px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
         }
         .sub-details {
             font-size: 17px;
-            color: rgba(255, 255, 255, 0.78);
+            color: rgba(255, 255, 255, 0.75);
             line-height: 1.45;
         }
         .main-icon-wrap {
-            width: 115px;
-            height: 115px;
+            width: 112px;
+            height: 112px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .temp-main {
-            font-size: 118px;
+            font-size: 120px;
             font-weight: 200;
             line-height: 0.95;
             margin-left: 14px;
             letter-spacing: -3px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
 
-        /* Üveghatású kártyák */
+        /* Kártyák */
         .glass-card {
-            background: rgba(255, 255, 255, 0.11);
-            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 18px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
         }
 
         /* Óránkénti előrejelzés */
@@ -194,11 +188,11 @@
         .hour-time {
             font-size: 19px;
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.78);
         }
         .hour-icon-wrap {
-            width: 54px;
-            height: 54px;
+            width: 52px;
+            height: 52px;
             margin: 10px 0;
             display: flex;
             align-items: center;
@@ -247,7 +241,7 @@
         }
         .temp-min {
             font-size: 19px;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.55);
             font-weight: 500;
             width: 36px;
         }
@@ -260,7 +254,7 @@
         .temp-bar-bg {
             flex: 1;
             height: 6px;
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 4px;
             margin: 0 10px;
             position: relative;
@@ -279,61 +273,46 @@
             bottom: 6px;
             right: 38px;
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.35);
-            z-index: 2;
+            color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Animációk */
-        .anim-spin {
-            -webkit-animation: spinSlow 28s linear infinite;
-            animation: spinSlow 28s linear infinite;
-        }
+        /* Ultra-könnyű CSS mikro-animációk (csak nappal/este) */
         .anim-float {
-            -webkit-animation: floatCloud 4.5s ease-in-out infinite;
-            animation: floatCloud 4.5s ease-in-out infinite;
+            -webkit-animation: floatGentle 6s ease-in-out infinite;
+            animation: floatGentle 6s ease-in-out infinite;
         }
         .anim-moon {
-            -webkit-animation: glowMoon 5s ease-in-out infinite;
-            animation: glowMoon 5s ease-in-out infinite;
+            -webkit-animation: moonGentle 7s ease-in-out infinite;
+            animation: moonGentle 7s ease-in-out infinite;
         }
 
         @-webkit-keyframes pulseColon {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
+            50% { opacity: 0.3; }
         }
         @keyframes pulseColon {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
+            50% { opacity: 0.3; }
         }
-        @-webkit-keyframes spinSlow {
-            from { -webkit-transform: rotate(0deg); }
-            to { -webkit-transform: rotate(360deg); }
-        }
-        @keyframes spinSlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @-webkit-keyframes floatCloud {
+        @-webkit-keyframes floatGentle {
             0%, 100% { -webkit-transform: translateY(0px); }
-            50% { -webkit-transform: translateY(-6px); }
+            50% { -webkit-transform: translateY(-5px); }
         }
-        @keyframes floatCloud {
+        @keyframes floatGentle {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
+            50% { transform: translateY(-5px); }
         }
-        @-webkit-keyframes glowMoon {
-            0%, 100% { -webkit-transform: scale(1) rotate(-4deg); }
-            50% { -webkit-transform: scale(1.05) rotate(2deg); }
+        @-webkit-keyframes moonGentle {
+            0%, 100% { -webkit-transform: rotate(-3deg); }
+            50% { -webkit-transform: rotate(3deg); }
         }
-        @keyframes glowMoon {
-            0%, 100% { transform: scale(1) rotate(-4deg); }
-            50% { transform: scale(1.05) rotate(2deg); }
+        @keyframes moonGentle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
         }
     </style>
 </head>
-<body class="theme-day-clear">
-
-    <canvas id="weather-canvas"></canvas>
+<body class="theme-evening">
 
     <div class="content-layer">
         <div class="top-section">
@@ -342,7 +321,7 @@
                 <div id="date">Betöltés...</div>
                 <div class="location-row">
                     <span class="location-tag">📍 Veszprém, Csalogány utca</span>
-                    <span class="night-badge">Éjszakai mód</span>
+                    <span class="eco-badge" id="mode-badge">ECO</span>
                 </div>
             </div>
             <div class="current-weather">
@@ -368,20 +347,19 @@
     <script>
         var LAT = 47.0985;
         var LON = 17.9150;
-        var currentEffect = "clear";
         var latestWeatherData = null;
+        var lastMinuteStr = "";
 
         var daysHu = ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"];
         var monthsHu = ["január", "február", "március", "április", "május", "június", "július", "augusztus", "szeptember", "október", "november", "december"];
 
-        // Egyedi, Apple-stílusú SVG ikon generátor (Nappal és Éjszaka külön!)
+        // Apple-stílusú SVG ikonok (Nappal és Éjszaka külön)
         function getSvgIcon(code, isDay, animated) {
             var uid = Math.floor(Math.random() * 100000);
-            var sunAnim = animated ? ' class="anim-spin"' : '';
-            var cloudAnim = animated ? ' class="anim-float"' : '';
+            var floatAnim = animated ? ' class="anim-float"' : '';
             var moonAnim = animated ? ' class="anim-moon"' : '';
 
-            var sunSvg = '<g' + sunAnim + ' style="transform-origin: 50px 50px;">' +
+            var sunSvg = '<g' + floatAnim + '>' +
                 '<circle cx="50" cy="50" r="22" fill="url(#sunGrad' + uid + ')"/>' +
                 '<g stroke="#FFD60A" stroke-width="4" stroke-linecap="round">' +
                 '<line x1="50" y1="14" x2="50" y2="21"/><line x1="50" y1="79" x2="50" y2="86"/>' +
@@ -396,7 +374,7 @@
                 '<circle cx="80" cy="42" r="1.5" fill="#FFF9D6" opacity="0.7"/>' +
                 '</g>';
 
-            var cloudSvg = '<g' + cloudAnim + '>' +
+            var cloudSvg = '<g' + floatAnim + '>' +
                 '<path d="M30 72 H72 A15 15 0 0 0 70 42 A22 22 0 0 0 28 38 A17 17 0 0 0 30 72 Z" fill="url(#cloudGrad' + uid + ')"/>' +
                 '</g>';
 
@@ -487,25 +465,34 @@
             if (hours.length < 2) hours = "0" + hours;
             if (minutes.length < 2) minutes = "0" + minutes;
 
-            document.getElementById("clock").innerHTML = hours + '<span class="blink-colon">:</span>' + minutes;
-            document.getElementById("date").innerText = daysHu[now.getDay()] + ", " + monthsHu[now.getMonth()] + " " + now.getDate() + ".";
+            var currentMinuteStr = hours + ":" + minutes;
+            // Csak akkor nyúlunk a DOM-hoz, ha tényleg percet váltott az óra!
+            if (currentMinuteStr !== lastMinuteStr) {
+                lastMinuteStr = currentMinuteStr;
+                document.getElementById("clock").innerHTML = hours + '<span class="blink-colon">:</span>' + minutes;
+                document.getElementById("date").innerText = daysHu[now.getDay()] + ", " + monthsHu[now.getMonth()] + " " + now.getDate() + ".";
 
-            // 22:00 és 06:00 között kötelező szemkímélő Dark Mode
-            var isDeepNight = (h >= 22 || h < 6);
+                var isDeepNight = (h >= 22 || h < 6);
+                var badge = document.getElementById("mode-badge");
 
-            if (isDeepNight) {
-                document.body.className = "theme-night-dark";
-            } else if (latestWeatherData) {
-                var curr = latestWeatherData.current;
-                var meta = getWeatherMeta(curr.weather_code);
-                if (curr.is_day === 0) {
-                    document.body.className = "theme-evening";
-                } else if (meta.effect === "rain") {
-                    document.body.className = "theme-day-rain";
-                } else if (meta.effect === "clouds") {
-                    document.body.className = "theme-day-cloudy";
+                if (isDeepNight) {
+                    document.body.className = "theme-night-dark";
+                    badge.innerText = "Éjszakai mód (22–06)";
                 } else {
-                    document.body.className = "theme-day-clear";
+                    badge.innerText = "ECO";
+                    if (latestWeatherData) {
+                        var curr = latestWeatherData.current;
+                        var meta = getWeatherMeta(curr.weather_code);
+                        if (curr.is_day === 0) {
+                            document.body.className = "theme-evening";
+                        } else if (meta.effect === "rain") {
+                            document.body.className = "theme-day-rain";
+                        } else if (meta.effect === "clouds") {
+                            document.body.className = "theme-day-cloudy";
+                        } else {
+                            document.body.className = "theme-day-clear";
+                        }
+                    }
                 }
             }
         }
@@ -543,16 +530,10 @@
 
             document.getElementById("main-icon").innerHTML = getSvgIcon(curr.weather_code, isDayNow, true);
 
-            // Részecske háttér frissítése
-            if (!isDayNow && meta.effect === "clear") {
-                currentEffect = "stars";
-            } else {
-                currentEffect = meta.effect;
-            }
-            initParticles();
+            lastMinuteStr = ""; // Kényszerített téma-frissítés
             applyThemeAndTime();
 
-            // Óránkénti előrejelzés (itt is külön kezeli a nappalt és az éjszakát!)
+            // Óránkénti előrejelzés (nappali és éjszakai ikonokkal)
             var hourlyHtml = "";
             var count = 0;
             for (var i = 0; i < data.hourly.time.length; i++) {
@@ -618,79 +599,10 @@
             document.getElementById("status-bar").innerText = "Frissítve: " + uH + ":" + uM;
         }
 
-        // --- HÁTTÉR ANIMÁCIÓ (CANVAS) ---
-        var canvas = document.getElementById("weather-canvas");
-        var ctx = canvas.getContext("2d");
-        var particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
-
-        function initParticles() {
-            particles = [];
-            var count = (currentEffect === "rain") ? 75 : (currentEffect === "snow") ? 55 : (currentEffect === "stars") ? 60 : 12;
-            for (var i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    r: (currentEffect === "clouds") ? (Math.random() * 60 + 30) : (Math.random() * 2 + 0.8),
-                    speedX: (currentEffect === "clouds") ? (Math.random() * 0.3 + 0.1) : (Math.random() * 0.4 - 0.2),
-                    speedY: (currentEffect === "rain") ? (Math.random() * 7 + 7) : (currentEffect === "snow") ? (Math.random() * 1.4 + 0.5) : 0,
-                    alpha: Math.random() * 0.6 + 0.15,
-                    twinkle: Math.random() * 0.015 + 0.005
-                });
-            }
-        }
-
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (var i = 0; i < particles.length; i++) {
-                var p = particles[i];
-                ctx.beginPath();
-
-                if (currentEffect === "rain") {
-                    ctx.strokeStyle = "rgba(160, 205, 255, " + p.alpha + ")";
-                    ctx.lineWidth = 1.4;
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x + p.speedX, p.y + 14);
-                    ctx.stroke();
-                    p.x += p.speedX;
-                    p.y += p.speedY;
-                    if (p.y > canvas.height) { p.y = -15; p.x = Math.random() * canvas.width; }
-                } else if (currentEffect === "snow") {
-                    ctx.fillStyle = "rgba(255, 255, 255, " + p.alpha + ")";
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fill();
-                    p.x += Math.sin(p.y * 0.02) * 0.4;
-                    p.y += p.speedY;
-                    if (p.y > canvas.height) { p.y = -5; p.x = Math.random() * canvas.width; }
-                } else if (currentEffect === "clouds") {
-                    ctx.fillStyle = "rgba(255, 255, 255, 0.035)";
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fill();
-                    p.x += p.speedX;
-                    if (p.x - p.r > canvas.width) { p.x = -p.r; }
-                } else {
-                    p.alpha += p.twinkle;
-                    if (p.alpha > 0.8 || p.alpha < 0.1) p.twinkle = -p.twinkle;
-                    ctx.fillStyle = "rgba(255, 255, 255, " + p.alpha + ")";
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-            requestAnimationFrame(animateCanvas);
-        }
-
-        // Indítás
-        initParticles();
-        animateCanvas();
+        // Indítás (10 másodpercenkénti könnyű ellenőrzés a 60 FPS-es terhelés helyett)
         applyThemeAndTime();
         fetchWeather();
-        setInterval(applyThemeAndTime, 1000);
+        setInterval(applyThemeAndTime, 10000);
         setInterval(fetchWeather, 15 * 60 * 1000);
     </script>
 </body>
