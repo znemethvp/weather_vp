@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Veszprém Időjárás</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-user-select: none;
+        }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px 40px;
+            overflow: hidden;
+        }
+        /* Felső rész: Óra és Aktuális időjárás */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 25px;
+        }
+        .clock-box {
+            text-align: left;
+        }
+        #clock {
+            font-size: 115px;
+            font-weight: 200;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+        #date {
+            font-size: 26px;
+            color: #aaaaaa;
+            margin-top: 10px;
+            text-transform: capitalize;
+        }
+        .location-tag {
+            font-size: 16px;
+            color: #4da6ff;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        .current-weather {
+            text-align: right;
+            display: flex;
+            align-items: center;
+        }
+        .temp-main {
+            font-size: 115px;
+            font-weight: 300;
+            line-height: 1;
+            margin-left: 20px;
+        }
+        .weather-details {
+            text-align: right;
+            margin-right: 25px;
+        }
+        #weather-desc {
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+        .sub-details {
+            font-size: 18px;
+            color: #999999;
+            line-height: 1.4;
+        }
+        .main-icon {
+            font-size: 90px;
+        }
+
+        /* Középső rész: Óránkénti előrejelzés */
+        .hourly-section {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+        }
+        .hour-card {
+            text-align: center;
+            background: #111111;
+            padding: 15px 10px;
+            border-radius: 14px;
+            width: 15%;
+        }
+        .hour-time {
+            font-size: 20px;
+            color: #aaaaaa;
+            margin-bottom: 10px;
+        }
+        .hour-icon {
+            font-size: 36px;
+            margin: 10px 0;
+        }
+        .hour-temp {
+            font-size: 26px;
+            font-weight: 500;
+        }
+
+        /* Alsó rész: Többnapos előrejelzés */
+        .daily-section {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+        }
+        .day-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #111111;
+            padding: 18px 25px;
+            border-radius: 14px;
+            width: 23.5%;
+        }
+        .day-name {
+            font-size: 22px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        .day-icon {
+            font-size: 36px;
+        }
+        .day-temps {
+            text-align: right;
+            font-size: 22px;
+        }
+        .temp-max {
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .temp-min {
+            color: #777777;
+            margin-left: 8px;
+        }
+        #status-bar {
+            position: absolute;
+            bottom: 6px;
+            right: 40px;
+            font-size: 12px;
+            color: #444444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-section">
+        <div class="clock-box">
+            <div id="clock">00:00</div>
+            <div id="date">Betöltés...</div>
+            <div class="location-tag">📍 Veszprém, Csalogány utca</div>
+        </div>
+        <div class="current-weather">
+            <div class="weather-details">
+                <div id="weather-desc">--</div>
+                <div class="sub-details">
+                    Hőérzet: <span id="apparent-temp">--</span>°C<br>
+                    Szél: <span id="wind-speed">--</span> km/h
+                </div>
+            </div>
+            <div class="main-icon" id="main-icon">⏳</div>
+            <div class="temp-main"><span id="current-temp">--</span>°</div>
+        </div>
+    </div>
+
+    <div class="hourly-section" id="hourly-container"></div>
+
+    <div class="daily-section" id="daily-container"></div>
+
+    <div id="status-bar">Utolsó frissítés: --:--</div>
+
+    <script>
+        // Veszprém, Csalogány utca koordinátái
+        var LAT = 47.0985;
+        var LON = 17.9150;
+
+        var weatherIcons = {
+            0: { icon: "☀️", text: "Derült" },
+            1: { icon: "🌤️", text: "Többnyire derült" },
+            2: { icon: "⛅", text: "Részben felhős" },
+            3: { icon: "☁️", text: "Borult" },
+            45: { icon: "🌫️", text: "Ködös" },
+            48: { icon: "🌫️", text: "Zúzmarás köd" },
+            51: { icon: "🌦️", text: "Gyenge szitálás" },
+            53: { icon: "🌦️", text: "Szitálás" },
+            55: { icon: "🌧️", text: "Erős szitálás" },
+            61: { icon: "🌦️", text: "Gyenge eső" },
+            63: { icon: "🌧️", text: "Eső" },
+            65: { icon: "🌧️", text: "Heves eső" },
+            66: { icon: "🌨️", text: "Ónos eső" },
+            67: { icon: "🌨️", text: "Erős ónos eső" },
+            71: { icon: "🌨️", text: "Gyenge havazás" },
+            73: { icon: "❄️", text: "Havazás" },
+            75: { icon: "❄️", text: "Erős havazás" },
+            77: { icon: "❄️", text: "Hószállingózás" },
+            80: { icon: "🌦️", text: "Zápor" },
+            81: { icon: "🌧️", text: "Erős zápor" },
+            82: { icon: "⛈️", text: "Felhőszakadás" },
+            85: { icon: "🌨️", text: "Hózápor" },
+            86: { icon: "❄️", text: "Erős hózápor" },
+            95: { icon: "⛈️", text: "Zivatar" },
+            96: { icon: "⛈️", text: "Zivatar jégesővel" },
+            99: { icon: "⛈️", text: "Heves zivatar" }
+        };
+
+        var daysHu = ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"];
+        var monthsHu = ["január", "február", "március", "április", "május", "június", "július", "augusztus", "szeptember", "október", "november", "december"];
+
+        function getWeatherInfo(code) {
+            return weatherIcons[code] || { icon: "🌡️", text: "Változó" };
+        }
+
+        function updateClock() {
+            var now = new Date();
+            var hours = String(now.getHours());
+            var minutes = String(now.getMinutes());
+            if (hours.length < 2) hours = "0" + hours;
+            if (minutes.length < 2) minutes = "0" + minutes;
+
+            document.getElementById("clock").innerText = hours + ":" + minutes;
+
+            var dayName = daysHu[now.getDay()];
+            var monthName = monthsHu[now.getMonth()];
+            var dayNum = now.getDate();
+            document.getElementById("date").innerText = dayName + ", " + monthName + " " + dayNum + ".";
+        }
+
+        function fetchWeather() {
+            var url = "https://api.open-meteo.com/v1/forecast?latitude=" + LAT + "&longitude=" + LON +
+                      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m" +
+                      "&hourly=temperature_2m,weather_code" +
+                      "&daily=weather_code,temperature_2m_max,temperature_2m_min" +
+                      "&timezone=Europe%2FBudapest&forecast_days=5";
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    renderWeather(data);
+                }
+            };
+            xhr.send();
+        }
+
+        function renderWeather(data) {
+            // Aktuális időjárás
+            var curr = data.current;
+            var info = getWeatherInfo(curr.weather_code);
+            document.getElementById("current-temp").innerText = Math.round(curr.temperature_2m);
+            document.getElementById("apparent-temp").innerText = Math.round(curr.apparent_temperature);
+            document.getElementById("wind-speed").innerText = Math.round(curr.wind_speed_10m);
+            document.getElementById("weather-desc").innerText = info.text;
+            document.getElementById("main-icon").innerText = info.icon;
+
+            // Óránkénti előrejelzés (következő 6x2 óra)
+            var nowHour = new Date().getHours();
+            var hourlyHtml = "";
+            var count = 0;
+            for (var i = 0; i < data.hourly.time.length; i++) {
+                var itemDate = new Date(data.hourly.time[i]);
+                if (itemDate.getTime() > new Date().getTime() && count < 6) {
+                    // Csak minden második órát mutatjuk, hogy átfogóbb legyen (pl. +2, +4, +6 óra)
+                    if (i % 2 === 0) {
+                        var h = String(itemDate.getHours());
+                        if (h.length < 2) h = "0" + h;
+                        var hInfo = getWeatherInfo(data.hourly.weather_code[i]);
+                        var hTemp = Math.round(data.hourly.temperature_2m[i]);
+
+                        hourlyHtml += '<div class="hour-card">' +
+                                      '<div class="hour-time">' + h + ':00</div>' +
+                                      '<div class="hour-icon">' + hInfo.icon + '</div>' +
+                                      '<div class="hour-temp">' + hTemp + '°</div>' +
+                                      '</div>';
+                        count++;
+                    }
+                }
+            }
+            document.getElementById("hourly-container").innerHTML = hourlyHtml;
+
+            // Napi előrejelzés (holnaptól 4 nap)
+            var dailyHtml = "";
+            for (var d = 1; d <= 4; d++) {
+                var dDate = new Date(data.daily.time[d]);
+                var dName = daysHu[dDate.getDay()];
+                var dInfo = getWeatherInfo(data.daily.weather_code[d]);
+                var tMax = Math.round(data.daily.temperature_2m_max[d]);
+                var tMin = Math.round(data.daily.temperature_2m_min[d]);
+
+                dailyHtml += '<div class="day-card">' +
+                             '<div><div class="day-name">' + dName + '</div></div>' +
+                             '<div class="day-icon">' + dInfo.icon + '</div>' +
+                             '<div class="day-temps"><span class="temp-max">' + tMax + '°</span><span class="temp-min">' + tMin + '°</span></div>' +
+                             '</div>';
+            }
+            document.getElementById("daily-container").innerHTML = dailyHtml;
+
+            // Frissítés ideje
+            var now = new Date();
+            var uH = String(now.getHours());
+            var uM = String(now.getMinutes());
+            if (uH.length < 2) uH = "0" + uH;
+            if (uM.length < 2) uM = "0" + uM;
+            document.getElementById("status-bar").innerText = "Frissítve: " + uH + ":" + uM;
+        }
+
+        // Indítás
+        updateClock();
+        fetchWeather();
+        setInterval(updateClock, 1000);
+        setInterval(fetchWeather, 15 * 60 * 1000); // 15 percenként frissít
+    </script>
+</body>
+</html>
