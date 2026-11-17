@@ -65,6 +65,9 @@
             letter-spacing: -3px;
             text-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
+        #night-summary {
+            display: none;
+        }
         #date {
             font-size: 25px;
             font-weight: 400;
@@ -231,7 +234,7 @@
 
         /* =========================================================
            ÉJSZAKAI ÜZEMMÓD (22:00 - 05:30):
-           Csak a középszürke óra látszik teljes képernyőn, fekete háttérrel
+           Óriási, vastag (bold) középszürke óra + alatta rövid időjárás
            ========================================================= */
         body.theme-night-clock {
             background: #000000 !important;
@@ -252,14 +255,23 @@
         }
         body.theme-night-clock .clock-box {
             text-align: center;
+            width: 100%;
         }
         body.theme-night-clock #clock {
-            font-size: 270px;
-            font-weight: 200;
-            color: #42464c; /* Visszafogott, szemkímélő középszürke */
+            font-size: 315px;
+            font-weight: 700;
+            color: #52575e; /* Jól olvasható, szemkímélő középszürke */
             text-shadow: none;
-            letter-spacing: -6px;
-            line-height: 1;
+            letter-spacing: -8px;
+            line-height: 0.95;
+        }
+        body.theme-night-clock #night-summary {
+            display: block;
+            margin-top: 28px;
+            font-size: 56px;
+            font-weight: 600;
+            color: #454a50;
+            letter-spacing: -0.5px;
         }
         body.theme-night-clock #date,
         body.theme-night-clock .location-tag,
@@ -277,6 +289,7 @@
         <div class="top-section">
             <div class="clock-box">
                 <div id="clock">00:00</div>
+                <div id="night-summary">--° • Betöltés</div>
                 <div id="date">Betöltés...</div>
                 <div class="location-tag">📍 Veszprém, Csalogány utca</div>
             </div>
@@ -379,34 +392,34 @@
 
         function getWeatherMeta(code) {
             var map = {
-                0: { text: "Derült", effect: "clear" },
-                1: { text: "Többnyire derült", effect: "clear" },
-                2: { text: "Részben felhős", effect: "clouds" },
-                3: { text: "Borult", effect: "clouds" },
-                45: { text: "Ködös", effect: "clouds" },
-                48: { text: "Zúzmarás köd", effect: "clouds" },
-                51: { text: "Gyenge szitálás", effect: "rain" },
-                53: { text: "Szitálás", effect: "rain" },
-                55: { text: "Erős szitálás", effect: "rain" },
-                61: { text: "Gyenge eső", effect: "rain" },
-                63: { text: "Eső", effect: "rain" },
-                65: { text: "Heves eső", effect: "rain" },
-                66: { text: "Ónos eső", effect: "rain" },
-                67: { text: "Erős ónos eső", effect: "rain" },
-                71: { text: "Gyenge havazás", effect: "snow" },
-                73: { text: "Havazás", effect: "snow" },
-                75: { text: "Erős havazás", effect: "snow" },
-                77: { text: "Hószállingózás", effect: "snow" },
-                80: { text: "Zápor", effect: "rain" },
-                81: { text: "Erős zápor", effect: "rain" },
-                82: { text: "Felhőszakadás", effect: "rain" },
-                85: { text: "Hózápor", effect: "snow" },
-                86: { text: "Erős hózápor", effect: "snow" },
-                95: { text: "Zivatar", effect: "rain" },
-                96: { text: "Zivatar jégesővel", effect: "rain" },
-                99: { text: "Heves zivatar", effect: "rain" }
+                0: { text: "Derült", shortText: "Tiszta", effect: "clear" },
+                1: { text: "Többnyire derült", shortText: "Tiszta", effect: "clear" },
+                2: { text: "Részben felhős", shortText: "Felhős", effect: "clouds" },
+                3: { text: "Borult", shortText: "Borult", effect: "clouds" },
+                45: { text: "Ködös", shortText: "Köd", effect: "clouds" },
+                48: { text: "Zúzmarás köd", shortText: "Köd", effect: "clouds" },
+                51: { text: "Gyenge szitálás", shortText: "Szitálás", effect: "rain" },
+                53: { text: "Szitálás", shortText: "Szitálás", effect: "rain" },
+                55: { text: "Erős szitálás", shortText: "Szitálás", effect: "rain" },
+                61: { text: "Gyenge eső", shortText: "Eső", effect: "rain" },
+                63: { text: "Eső", shortText: "Eső", effect: "rain" },
+                65: { text: "Heves eső", shortText: "Eső", effect: "rain" },
+                66: { text: "Ónos eső", shortText: "Ónos eső", effect: "rain" },
+                67: { text: "Erős ónos eső", shortText: "Ónos eső", effect: "rain" },
+                71: { text: "Gyenge havazás", shortText: "Hó", effect: "snow" },
+                73: { text: "Havazás", shortText: "Hó", effect: "snow" },
+                75: { text: "Erős havazás", shortText: "Hó", effect: "snow" },
+                77: { text: "Hószállingózás", shortText: "Hó", effect: "snow" },
+                80: { text: "Zápor", shortText: "Zápor", effect: "rain" },
+                81: { text: "Erős zápor", shortText: "Zápor", effect: "rain" },
+                82: { text: "Felhőszakadás", shortText: "Eső", effect: "rain" },
+                85: { text: "Hózápor", shortText: "Hózápor", effect: "snow" },
+                86: { text: "Erős hózápor", shortText: "Hózápor", effect: "snow" },
+                95: { text: "Zivatar", shortText: "Zivatar", effect: "rain" },
+                96: { text: "Zivatar jégesővel", shortText: "Zivatar", effect: "rain" },
+                99: { text: "Heves zivatar", shortText: "Zivatar", effect: "rain" }
             };
-            return map[code] || { text: "Változó", effect: "clouds" };
+            return map[code] || { text: "Változó", shortText: "Változó", effect: "clouds" };
         }
 
         function applyThemeAndTime() {
@@ -425,7 +438,7 @@
                 document.getElementById("clock").innerText = currentMinuteStr;
                 document.getElementById("date").innerText = daysHu[now.getDay()] + ", " + monthsHu[now.getMonth()] + " " + now.getDate() + ".";
 
-                // 22:00 és 05:30 között csak a középszürke óra látszik
+                // 22:00 és 05:30 között csak a vastag középszürke óra és a rövid időjárás látszik
                 var totalMinutes = h * 60 + m;
                 var isNightClock = (totalMinutes >= 22 * 60 || totalMinutes < 5 * 60 + 30);
 
@@ -471,8 +484,10 @@
             var curr = data.current;
             var meta = getWeatherMeta(curr.weather_code);
             var isDayNow = (curr.is_day === 1);
+            var roundedTemp = Math.round(curr.temperature_2m);
 
-            document.getElementById("current-temp").innerText = Math.round(curr.temperature_2m);
+            document.getElementById("current-temp").innerText = roundedTemp;
+            document.getElementById("night-summary").innerText = roundedTemp + "° • " + meta.shortText;
             document.getElementById("apparent-temp").innerText = Math.round(curr.apparent_temperature);
             document.getElementById("humidity").innerText = Math.round(curr.relative_humidity_2m);
             document.getElementById("wind-speed").innerText = Math.round(curr.wind_speed_10m);
